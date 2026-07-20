@@ -67,17 +67,58 @@ else:
 if st.session_state["current_view"] == "Course Map":
     
     # Realistic Maritime Route (Waypoints inserted to navigate around Sardinia & Corsica)
+    # Combined Day 1 & Day 8 into a single explicit start/finish port entry to fix pin overlap
     ports_data = {
-        "Day 1: Rome (Civitavecchia), Italy": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 11", "is_port": True},
-        "Day 2: Naples / Capri, Italy": {"coords": [40.8359, 14.2694], "date": "Sun, Jul 12", "is_port": True},
-        "Sea Waypoint 1 (South of Sardinia)": {"coords": [38.8000, 9.5000], "date": "Mon, Jul 13", "is_port": False},
-        "Day 3: At Sea (Legend of the Seas)": {"coords": [38.5000, 6.2000], "date": "Mon, Jul 13", "is_port": False},
-        "Day 4: Barcelona, Spain": {"coords": [41.3851, 2.1734], "date": "Tue, Jul 14", "is_port": True},
-        "Day 5: Palma De Mallorca, Spain": {"coords": [39.5696, 2.6502], "date": "Wed, Jul 15", "is_port": True},
-        "Sea Waypoint 2 (Gulf of Lion)": {"coords": [41.8000, 4.5000], "date": "Wed, Jul 15", "is_port": False},
-        "Day 6: Marseille (Provence), France": {"coords": [43.2965, 5.3698], "date": "Thu, Jul 16", "is_port": True},
-        "Day 7: La Spezia (Florence/Pisa), Italy": {"coords": [44.1025, 9.8241], "date": "Fri, Jul 17", "is_port": True},
-        "Day 8: Rome Return": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 18", "is_port": True}
+        "Rome (Civitavecchia) — Start & Finish": {
+            "coords": [42.0925, 11.7952], 
+            "date": "Day 1 (Sat, Jul 11) & Day 8 (Sat, Jul 18)", 
+            "is_port": True
+        },
+        "Day 2: Naples / Capri, Italy": {
+            "coords": [40.8359, 14.2694], 
+            "date": "Sun, Jul 12", 
+            "is_port": True
+        },
+        "Sea Waypoint 1 (South of Sardinia)": {
+            "coords": [38.8000, 9.5000], 
+            "date": "Mon, Jul 13", 
+            "is_port": False
+        },
+        "Day 3: At Sea (Legend of the Seas)": {
+            "coords": [38.5000, 6.2000], 
+            "date": "Mon, Jul 13", 
+            "is_port": False
+        },
+        "Day 4: Barcelona, Spain": {
+            "coords": [41.3851, 2.1734], 
+            "date": "Tue, Jul 14", 
+            "is_port": True
+        },
+        "Day 5: Palma De Mallorca, Spain": {
+            "coords": [39.5696, 2.6502], 
+            "date": "Wed, Jul 15", 
+            "is_port": True
+        },
+        "Sea Waypoint 2 (Gulf of Lion)": {
+            "coords": [41.8000, 4.5000], 
+            "date": "Wed, Jul 15", 
+            "is_port": False
+        },
+        "Day 6: Marseille (Provence), France": {
+            "coords": [43.2965, 5.3698], 
+            "date": "Thu, Jul 16", 
+            "is_port": True
+        },
+        "Day 7: La Spezia (Florence/Pisa), Italy": {
+            "coords": [44.1025, 9.8241], 
+            "date": "Fri, Jul 17", 
+            "is_port": True
+        },
+        "Rome Return Route": {
+            "coords": [42.0925, 11.7952], 
+            "date": "Sat, Jul 18", 
+            "is_port": False
+        }
     }
     
     # Rich Blue Oceans & Vibrant Green Topography Canvas
@@ -93,12 +134,12 @@ if st.session_state["current_view"] == "Course Map":
     folium.PolyLine(route_coords, color="#00E5FF", weight=10, opacity=0.5).add_to(m) # Outer Glow
     folium.PolyLine(route_coords, color="#0052CC", weight=5, opacity=0.9).add_to(m) # Solid Line
 
-    # Add Port Pins (Hides raw sea waypoints so only real ports get pins)
+    # Add Port Pins (Only real ports get pins)
     for port_name, info in ports_data.items():
         if info["is_port"]:
             folium.CircleMarker(
                 location=info["coords"],
-                radius=8,
+                radius=9,
                 color="#FFFFFF",
                 weight=3,
                 fill=True,
@@ -107,7 +148,16 @@ if st.session_state["current_view"] == "Course Map":
                 popup=f"<b>{port_name}</b><br>{info['date']}"
             ).add_to(m)
 
-    # LEGEND OF THE SEAS SHIP ICON (Positioned in Open Water)
+    # LEGEND OF THE SEAS REAL PHOTO SHIP ICON
+    # Uses an image URL for Legend of the Seas directly as a map pin
+    ship_image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg/320px-Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg"
+    
+    ship_icon = folium.CustomIcon(
+        ship_image_url,
+        icon_size=(60, 40),
+        icon_anchor=(30, 20)
+    )
+
     ship_popup_html = """
     <div style='text-align: center; font-family: sans-serif; padding: 5px;'>
         <h4 style='color: #002366; margin: 0;'>🚢 Legend of the Seas</h4>
@@ -119,7 +169,7 @@ if st.session_state["current_view"] == "Course Map":
     folium.Marker(
         location=ports_data["Day 3: At Sea (Legend of the Seas)"]["coords"],
         popup=folium.Popup(ship_popup_html, max_width=250),
-        icon=folium.Icon(color="blue", icon="ship", prefix="fa"),
+        icon=ship_icon,
         tooltip="🚢 Legend of the Seas"
     ).add_to(m)
 
@@ -136,7 +186,6 @@ else:
     if selected_deck == 16:
         st.markdown("<h3 style='color: #00E5FF;'>Deck 16 — Thrill Island & Water Park</h3>", unsafe_allow_html=True)
         
-        # Hotspots tailored for Deck 16
         hotspots = {
             "🎢 Water Slides": {
                 "x_min": 55, "x_max": 85, "y_min": 65, "y_max": 80, 
@@ -157,7 +206,6 @@ else:
         
         deck_plan_path = "images/decks/deck16_plan.png"
         
-        # Interactive Blueprint Coordinate Tapper
         if os.path.exists(deck_plan_path):
             st.write("👉 **Tap directly on the Water Slides or FlowRider below:**")
             value = streamlit_image_coordinates(deck_plan_path, key="deck16_interactive")
@@ -189,7 +237,6 @@ else:
                 else:
                     st.write("💡 *Tap near the water slides near the bottom right of the deck map!*")
         else:
-            # Fallback simulator when testing online without local files uploaded
             st.warning("📋 Drop your deck blueprint screenshot as 'deck16_plan.png' inside 'images/decks/' to enable direct image tapping.")
             
             st.write("🧪 **Tap Simulator (Testing Mode):**")
