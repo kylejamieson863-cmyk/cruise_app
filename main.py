@@ -180,23 +180,23 @@ else:
     if selected_deck == 5:
         st.markdown("<h3 style='color: #00E5FF;'>Deck 5 — Royal Promenade & The Pearl</h3>", unsafe_allow_html=True)
         
-        # Define hotspot bounding boxes based on resized image dimensions
+          # Define hotspot bounding boxes based on resized image dimensions
         hotspots_deck5 = {
             "🍕 Sorrento's Pizza": {
-                "x_min": 100, "x_max": 280, 
-                "y_min": 300, "y_max": 500,
+                "x_min": 50, "x_max": 180,   # Around X: 114
+                "y_min": 620, "y_max": 750,  # Around Y: 686
                 "desc": "Late night pizza slices on the Royal Promenade!",
                 "img": "sorrentos.jpg"
             },
             "🔮 The Pearl": {
-                "x_min": 100, "x_max": 280, 
-                "y_min": 520, "y_max": 700,
+                "x_min": 50, "x_max": 180, 
+                "y_min": 800, "y_max": 950,
                 "desc": "The iconic structural masterpiece in the center of Deck 5.",
                 "img": "the_pearl.jpg"
             },
             "🎤 Spotlight Karaoke": {
-                "x_min": 100, "x_max": 280, 
-                "y_min": 200, "y_max": 290,
+                "x_min": 50, "x_max": 180, 
+                "y_min": 450, "y_max": 580,
                 "desc": "Bustling center of music and entertainment on Deck 5.",
                 "img": "karaoke.jpg"
             }
