@@ -66,8 +66,7 @@ else:
 # ================= VIEW 1: VIBRANT MAP WITH REALISTIC MARITIME PATH =================
 if st.session_state["current_view"] == "Course Map":
     
-    # Realistic Maritime Route (Waypoints inserted to navigate around Sardinia & Corsica)
-    # Combined Day 1 & Day 8 into a single explicit start/finish port entry to fix pin overlap
+    # Combined Day 1 & Day 8 into a single port entry to show both dates clearly on one pin
     ports_data = {
         "Rome (Civitavecchia) — Start & Finish": {
             "coords": [42.0925, 11.7952], 
@@ -121,7 +120,7 @@ if st.session_state["current_view"] == "Course Map":
         }
     }
     
-    # Rich Blue Oceans & Vibrant Green Topography Canvas
+    # Map configuration
     m = folium.Map(
         location=[41.2, 7.5], 
         zoom_start=6, 
@@ -129,12 +128,12 @@ if st.session_state["current_view"] == "Course Map":
         attr="Esri, HERE, Garmin, USGS, NGA, EPA, USDA, NPS"
     )
 
-    # Draw Cruise Route (Glowing Cyan Line)
+    # Route line around islands
     route_coords = [info["coords"] for info in ports_data.values()]
-    folium.PolyLine(route_coords, color="#00E5FF", weight=10, opacity=0.5).add_to(m) # Outer Glow
-    folium.PolyLine(route_coords, color="#0052CC", weight=5, opacity=0.9).add_to(m) # Solid Line
+    folium.PolyLine(route_coords, color="#00E5FF", weight=10, opacity=0.5).add_to(m)
+    folium.PolyLine(route_coords, color="#0052CC", weight=5, opacity=0.9).add_to(m)
 
-    # Add Port Pins (Only real ports get pins)
+    # Add Port Pins
     for port_name, info in ports_data.items():
         if info["is_port"]:
             folium.CircleMarker(
@@ -143,20 +142,14 @@ if st.session_state["current_view"] == "Course Map":
                 color="#FFFFFF",
                 weight=3,
                 fill=True,
-                fill_color="#FF2A6D", # Vibrant Coral Pins
+                fill_color="#FF2A6D",
                 fill_opacity=1,
                 popup=f"<b>{port_name}</b><br>{info['date']}"
             ).add_to(m)
 
-    # LEGEND OF THE SEAS REAL PHOTO SHIP ICON
-    # Uses an image URL for Legend of the Seas directly as a map pin
+    # Custom Ship Picture Icon
     ship_image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg/320px-Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg"
-    
-    ship_icon = folium.CustomIcon(
-        ship_image_url,
-        icon_size=(60, 40),
-        icon_anchor=(30, 20)
-    )
+    ship_icon = folium.CustomIcon(ship_image_url, icon_size=(60, 40), icon_anchor=(30, 20))
 
     ship_popup_html = """
     <div style='text-align: center; font-family: sans-serif; padding: 5px;'>
@@ -173,7 +166,6 @@ if st.session_state["current_view"] == "Course Map":
         tooltip="🚢 Legend of the Seas"
     ).add_to(m)
 
-    # Display Map
     st_folium(m, width=1200, height=550, returned_objects=[])
 
 
@@ -181,76 +173,8 @@ if st.session_state["current_view"] == "Course Map":
 else:
     st.markdown("<div class='rc-card'><strong>Deck Inspector:</strong> Choose a deck and tap directly on an attraction or venue to view your personal photos!</div>", unsafe_allow_html=True)
     
-    selected_deck = st.select_slider("Select Deck Floor Plan:", options=[5, 8, 16], value=16)
+    selected_deck = st.select_slider("Select Deck Floor Plan:", options=[5, 8, 16], value=5)
     
-    if selected_deck == 16:
-        st.markdown("<h3 style='color: #00E5FF;'>Deck 16 — Thrill Island & Water Park</h3>", unsafe_allow_html=True)
-        
-        hotspots = {
-            "🎢 Water Slides": {
-                "x_min": 55, "x_max": 85, "y_min": 65, "y_max": 80, 
-                "desc": "Captured right by the exit paths of the waterslides on Deck 16!", 
-                "img": "waterslides.jpg"
-            },
-            "🏄‍♂️ FlowRider Surfing": {
-                "x_min": 40, "x_max": 65, "y_min": 82, "y_max": 95, 
-                "desc": "Surfing simulator at the aft of Deck 16.", 
-                "img": "flowrider.jpg"
-            },
-            "🍹 Lime & Coconut Pool Bar": {
-                "x_min": 35, "x_max": 65, "y_min": 30, "y_max": 48, 
-                "desc": "Chilling by the pool deck lounges.", 
-                "img": "lime_and_coconut.jpg"
-            }
-        }
-        
-        deck_plan_path = "images/decks/deck16_plan.png"
-        
-        if os.path.exists(deck_plan_path):
-            st.write("👉 **Tap directly on the Water Slides or FlowRider below:**")
-            value = streamlit_image_coordinates(deck_plan_path, key="deck16_interactive")
-            
-            if value is not None:
-                click_x = value["x"]
-                click_y = value["y"]
-                
-                clicked_venue = None
-                for venue_name, zone in hotspots.items():
-                    if zone["x_min"] <= click_x <= zone["x_max"] and zone["y_min"] <= click_y <= zone["y_max"]:
-                        clicked_venue = venue_name
-                        break
-                
-                if clicked_venue:
-                    venue_data = hotspots[clicked_venue]
-                    st.markdown(f"""
-                    <div class='rc-card' style='border-left: 6px solid #FF2A6D;'>
-                        <h3 style='color: #002366; margin-top:0px;'>📍 {clicked_venue}</h3>
-                        <p style='color: #4A5568; margin-bottom:0px;'>{venue_data['desc']}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    venue_img_path = f"images/decks/{venue_data['img']}"
-                    if os.path.exists(venue_img_path):
-                        st.image(venue_img_path, use_container_width=True)
-                    else:
-                        st.info(f"📷 Photo ready slot: Name your photo '{venue_data['img']}' inside your 'images/decks/' folder!")
-                else:
-                    st.write("💡 *Tap near the water slides near the bottom right of the deck map!*")
-        else:
-            st.warning("📋 Drop your deck blueprint screenshot as 'deck16_plan.png' inside 'images/decks/' to enable direct image tapping.")
-            
-            st.write("🧪 **Tap Simulator (Testing Mode):**")
-            tap_sim = st.radio("Simulate tapping an icon on Deck 16:", ["None", "🎢 Water Slides", "🏄‍♂️ FlowRider Surfing"])
-            
-            if tap_sim != "None":
-                venue_data = hotspots[tap_sim]
-                st.markdown(f"""
-                <div class='rc-card' style='border-left: 6px solid #FF2A6D;'>
-                    <h3 style='color: #002366; margin-top:0px;'>📍 {tap_sim}</h3>
-                    <p style='color: #4A5568; margin-bottom:0px;'>{venue_data['desc']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-                st.image("https://images.unsplash.com/photo-1500339808621-7a3a33a41145?w=800", caption="Deck 16 Thrills", use_container_width=True)
-
-    else:
-        st.markdown(f"<div class='rc-card'>Slide back to <strong>Deck 16</strong> to test out the Water Slides interactive hotspot!</div>", unsafe_allow_html=True)
+    # ------------------- DECK 5 -------------------
+    if selected_deck == 5:
+        st.markdown("<h3 style='color: #00E5FF;'>Deck 5 — Royal Promenade & The Pearl</h3>", unsafe_allow_html=True)
