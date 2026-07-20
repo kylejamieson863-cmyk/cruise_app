@@ -4,13 +4,13 @@ from streamlit_folium import st_folium
 import os
 from streamlit_image_coordinates import streamlit_image_coordinates
 
-# 1. Full Page Config
+# 1. Full Page Setup
 st.set_page_config(page_title="Legend of the Seas", layout="wide")
 
-# Custom App Design Language
+# Custom Royal Caribbean App Design System
 st.markdown("""
     <style>
-    /* Clean, full-bleed cruise app layout */
+    /* Dark oceanic theme background */
     .stApp {
         background-color: #0A192F;
         color: #FFFFFF;
@@ -32,7 +32,7 @@ st.markdown("""
         box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
     }
 
-    /* Vibrant floating cards */
+    /* Vibrant floating info cards */
     .rc-card {
         background: rgba(255, 255, 255, 0.95);
         color: #002366;
@@ -44,13 +44,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Top Bar
+# Header Banner
 st.markdown("<div class='brand-header'>⚓ LEGEND OF THE SEAS — VOYAGE TRACKER</div>", unsafe_allow_html=True)
 
-# Navigation View Switcher
+# Initialize Session View State
 if "current_view" not in st.session_state:
     st.session_state["current_view"] = "Course Map"
 
+# Navigation Header Controls
 col1, col2 = st.columns([3, 1])
 with col1:
     st.markdown("<h2 style='color: #00E5FF; margin-top: 0px; font-weight: 800;'>Western Mediterranean Cruise</h2>", unsafe_allow_html=True)
@@ -62,22 +63,24 @@ if view_choice == "🚢 Deck Floor Plans":
 else:
     st.session_state["current_view"] = "Course Map"
 
-# ================= VIEW 1: VIBRANT FULL ITINERARY MAP =================
+# ================= VIEW 1: VIBRANT MAP WITH REALISTIC MARITIME PATH =================
 if st.session_state["current_view"] == "Course Map":
     
-    # 1. Full Itinerary Coordinates based on your official itinerary
+    # Realistic Maritime Route (Waypoints inserted to navigate around Sardinia & Corsica)
     ports_data = {
-        "Day 1: Rome (Civitavecchia), Italy": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 11"},
-        "Day 2: Naples / Capri, Italy": {"coords": [40.8359, 14.2694], "date": "Sun, Jul 12"},
-        "Day 3: At Sea (Legend of the Seas)": {"coords": [39.5000, 8.0000], "date": "Mon, Jul 13"},
-        "Day 4: Barcelona, Spain": {"coords": [41.3851, 2.1734], "date": "Tue, Jul 14"},
-        "Day 5: Palma De Mallorca, Spain": {"coords": [39.5696, 2.6502], "date": "Wed, Jul 15"},
-        "Day 6: Marseille (Provence), France": {"coords": [43.2965, 5.3698], "date": "Thu, Jul 16"},
-        "Day 7: La Spezia (Florence/Pisa), Italy": {"coords": [44.1025, 9.8241], "date": "Fri, Jul 17"},
-        "Day 8: Rome (Civitavecchia), Italy": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 18"}
+        "Day 1: Rome (Civitavecchia), Italy": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 11", "is_port": True},
+        "Day 2: Naples / Capri, Italy": {"coords": [40.8359, 14.2694], "date": "Sun, Jul 12", "is_port": True},
+        "Sea Waypoint 1 (South of Sardinia)": {"coords": [38.8000, 9.5000], "date": "Mon, Jul 13", "is_port": False},
+        "Day 3: At Sea (Legend of the Seas)": {"coords": [38.5000, 6.2000], "date": "Mon, Jul 13", "is_port": False},
+        "Day 4: Barcelona, Spain": {"coords": [41.3851, 2.1734], "date": "Tue, Jul 14", "is_port": True},
+        "Day 5: Palma De Mallorca, Spain": {"coords": [39.5696, 2.6502], "date": "Wed, Jul 15", "is_port": True},
+        "Sea Waypoint 2 (Gulf of Lion)": {"coords": [41.8000, 4.5000], "date": "Wed, Jul 15", "is_port": False},
+        "Day 6: Marseille (Provence), France": {"coords": [43.2965, 5.3698], "date": "Thu, Jul 16", "is_port": True},
+        "Day 7: La Spezia (Florence/Pisa), Italy": {"coords": [44.1025, 9.8241], "date": "Fri, Jul 17", "is_port": True},
+        "Day 8: Rome Return": {"coords": [42.0925, 11.7952], "date": "Sat, Jul 18", "is_port": True}
     }
     
-    # 2. Rich Blue and Lush Green Map Tiles (Esri World Topo)
+    # Rich Blue Oceans & Vibrant Green Topography Canvas
     m = folium.Map(
         location=[41.2, 7.5], 
         zoom_start=6, 
@@ -85,30 +88,30 @@ if st.session_state["current_view"] == "Course Map":
         attr="Esri, HERE, Garmin, USGS, NGA, EPA, USDA, NPS"
     )
 
-    # 3. Connect the Cruise Route Loop (Neon Blue Line)
+    # Draw Cruise Route (Glowing Cyan Line)
     route_coords = [info["coords"] for info in ports_data.values()]
     folium.PolyLine(route_coords, color="#00E5FF", weight=10, opacity=0.5).add_to(m) # Outer Glow
     folium.PolyLine(route_coords, color="#0052CC", weight=5, opacity=0.9).add_to(m) # Solid Line
 
-    # 4. Add Port Pins for every port in your itinerary
+    # Add Port Pins (Hides raw sea waypoints so only real ports get pins)
     for port_name, info in ports_data.items():
-        if "At Sea" not in port_name:
+        if info["is_port"]:
             folium.CircleMarker(
                 location=info["coords"],
                 radius=8,
                 color="#FFFFFF",
                 weight=3,
                 fill=True,
-                fill_color="#FF2A6D", # Bright Coral Pins
+                fill_color="#FF2A6D", # Vibrant Coral Pins
                 fill_opacity=1,
                 popup=f"<b>{port_name}</b><br>{info['date']}"
             ).add_to(m)
 
-    # 5. LEGEND OF THE SEAS SHIP MARKER (Positioned along the route)
+    # LEGEND OF THE SEAS SHIP ICON (Positioned in Open Water)
     ship_popup_html = """
     <div style='text-align: center; font-family: sans-serif; padding: 5px;'>
         <h4 style='color: #002366; margin: 0;'>🚢 Legend of the Seas</h4>
-        <p style='color: #0073E6; font-size: 12px; margin: 5px 0;'>Sailing Western Mediterranean</p>
+        <p style='color: #0073E6; font-size: 12px; margin: 5px 0;'>Cruising Open Mediterranean Waters</p>
         <p><b>Switch to 'Deck Floor Plans' above to inspect ship venues!</b></p>
     </div>
     """
@@ -154,7 +157,7 @@ else:
         
         deck_plan_path = "images/decks/deck16_plan.png"
         
-        # Interactive Image Click Listener
+        # Interactive Blueprint Coordinate Tapper
         if os.path.exists(deck_plan_path):
             st.write("👉 **Tap directly on the Water Slides or FlowRider below:**")
             value = streamlit_image_coordinates(deck_plan_path, key="deck16_interactive")
@@ -186,8 +189,8 @@ else:
                 else:
                     st.write("💡 *Tap near the water slides near the bottom right of the deck map!*")
         else:
-            # Testing fallback while traveling
-            st.warning("📋 Drop your deck screenshot as 'deck16_plan.png' inside 'images/decks/' to enable direct blueprint tapping.")
+            # Fallback simulator when testing online without local files uploaded
+            st.warning("📋 Drop your deck blueprint screenshot as 'deck16_plan.png' inside 'images/decks/' to enable direct image tapping.")
             
             st.write("🧪 **Tap Simulator (Testing Mode):**")
             tap_sim = st.radio("Simulate tapping an icon on Deck 16:", ["None", "🎢 Water Slides", "🏄‍♂️ FlowRider Surfing"])
@@ -200,7 +203,7 @@ else:
                     <p style='color: #4A5568; margin-bottom:0px;'>{venue_data['desc']}</p>
                 </div>
                 """, unsafe_allow_html=True)
-                st.image("https://images.unsplash.com/photo-1500339808621-7a3a33a41145?w=800", caption="Deck 16 Action Capture", use_container_width=True)
+                st.image("https://images.unsplash.com/photo-1500339808621-7a3a33a41145?w=800", caption="Deck 16 Thrills", use_container_width=True)
 
     else:
         st.markdown(f"<div class='rc-card'>Slide back to <strong>Deck 16</strong> to test out the Water Slides interactive hotspot!</div>", unsafe_allow_html=True)
