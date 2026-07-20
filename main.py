@@ -1,7 +1,8 @@
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
-import os
+import pathlib
+from PIL import Image
 from streamlit_image_coordinates import streamlit_image_coordinates
 
 # 1. Full Page Setup
@@ -66,7 +67,6 @@ else:
 # ================= VIEW 1: VIBRANT MAP WITH REALISTIC MARITIME PATH =================
 if st.session_state["current_view"] == "Course Map":
     
-    # Combined Day 1 & Day 8 into a single port entry to show both dates clearly on one pin
     ports_data = {
         "Rome (Civitavecchia) — Start & Finish": {
             "coords": [42.0925, 11.7952], 
@@ -120,7 +120,6 @@ if st.session_state["current_view"] == "Course Map":
         }
     }
     
-    # Map configuration
     m = folium.Map(
         location=[41.2, 7.5], 
         zoom_start=6, 
@@ -128,12 +127,10 @@ if st.session_state["current_view"] == "Course Map":
         attr="Esri, HERE, Garmin, USGS, NGA, EPA, USDA, NPS"
     )
 
-    # Route line around islands
     route_coords = [info["coords"] for info in ports_data.values()]
     folium.PolyLine(route_coords, color="#00E5FF", weight=10, opacity=0.5).add_to(m)
     folium.PolyLine(route_coords, color="#0052CC", weight=5, opacity=0.9).add_to(m)
 
-    # Add Port Pins
     for port_name, info in ports_data.items():
         if info["is_port"]:
             folium.CircleMarker(
@@ -147,7 +144,6 @@ if st.session_state["current_view"] == "Course Map":
                 popup=f"<b>{port_name}</b><br>{info['date']}"
             ).add_to(m)
 
-    # Custom Ship Picture Icon
     ship_image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg/320px-Legend_of_the_Seas_%28ship%2C_1995%29_001.jpg"
     ship_icon = folium.CustomIcon(ship_image_url, icon_size=(60, 40), icon_anchor=(30, 20))
 
@@ -175,6 +171,142 @@ else:
     
     selected_deck = st.select_slider("Select Deck Floor Plan:", options=[5, 8, 16], value=5)
     
+    # Absolute base paths for Streamlit Cloud
+    base_dir = pathlib.Path(__file__).parent
+    deck_dir = base_dir / "images" / "decks"
+
     # ------------------- DECK 5 -------------------
     if selected_deck == 5:
         st.markdown("<h3 style='color: #00E5FF;'>Deck 5 — Royal Promenade & The Pearl</h3>", unsafe_allow_html=True)
+        
+        hotspots_deck5 = {
+            "🍕 Sorrento's Pizza": {
+                "x_min": 25, "x_max": 45, "y_min": 30, "y_max": 40,
+                "desc": "Late night pizza slices on the Royal Promenade!",
+                "img": "sorrentos.jpg"
+            },
+            "🔮 The Pearl": {
+                "x_min": 30, "x_max": 50, "y_min": 45, "y_max": 55,
+                "desc": "The iconic structural masterpiece in the center of Deck 5.",
+                "img": "the_pearl.jpg"
+            },
+            "🎤 Spotlight Karaoke / Promenade": {
+                "x_min": 55, "x_max": 75, "y_min": 32, "y_max": 42,
+                "desc": "Bustling center of music and shopping on Deck 5.",
+                "img": "promenade.jpg"
+            }
+        }
+        
+        # Check all potential file names/extensions
+        possible_deck5 = [
+            deck_dir / "deck5_plan.png",
+            deck_dir / "deck5_plan.jpg",
+            deck_dir / "deck5_plan.jpeg",
+            deck_dir / "deck5_plan.PNG"
+        ]
+        
+        found_deck5 = None
+        for p in possible_deck5:
+            if p.exists():
+                found_deck5 = p
+                break
+
+        if found_deck5:
+            st.write("👉 **Tap directly on Sorrento's or The Pearl below:**")
+            
+            # Load with PIL to fix format extension mismatch
+            loaded_img = Image.open(found_deck5)
+            value = streamlit_image_coordinates(loaded_img, key="deck5_interactive")
+            
+            if value is not None:
+                click_x = value["x"]
+                click_y = value["y"]
+                
+                clicked_venue = None
+                for venue_name, zone in hotspots_deck5.items():
+                    if zone["x_min"] <= click_x <= zone["x_max"] and zone["y_min"] <= click_y <= zone["y_max"]:
+                        clicked_venue = venue_name
+                        break
+                
+                if clicked_venue:
+                    venue_data = hotspots_deck5[clicked_venue]
+                    st.markdown(f"""
+                    <div class='rc-card' style='border-left: 6px solid #FF2A6D;'>
+                        <h3 style='color: #002366; margin-top:0px;'>📍 {clicked_venue}</h3>
+                        <p style='color: #4A5568; margin-bottom:0px;'>{venue_data['desc']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    venue_img_path = deck_dir / venue_data['img']
+                    if venue_img_path.exists():
+                        st.image(str(venue_img_path), use_container_width=True)
+                    else:
+                        st.info(f"📷 Photo ready slot: Name your photo '{venue_data['img']}' inside your 'images/decks/' folder!")
+                else:
+                    st.write("💡 *Tap near Sorrento's or The Pearl in the center of the deck map!*")
+        else:
+            st.warning(f"📋 Looking for image in `{deck_dir}`. Please verify that your uploaded file is inside `images/decks/` on GitHub!")
+
+    # ------------------- DECK 16 -------------------
+    elif selected_deck == 16:
+        st.markdown("<h3 style='color: #00E5FF;'>Deck 16 — Thrill Island & Water Park</h3>", unsafe_allow_html=True)
+        
+        hotspots_deck16 = {
+            "🎢 Water Slides": {
+                "x_min": 55, "x_max": 85, "y_min": 65, "y_max": 80, 
+                "desc": "Captured right by the exit paths of the waterslides on Deck 16!", 
+                "img": "waterslides.jpg"
+            },
+            "🏄‍♂️ FlowRider Surfing": {
+                "x_min": 40, "x_max": 65, "y_min": 82, "y_max": 95, 
+                "desc": "Surfing simulator at the aft of Deck 16.", 
+                "img": "flowrider.jpg"
+            }
+        }
+        
+        possible_deck16 = [
+            deck_dir / "deck16_plan.png",
+            deck_dir / "deck16_plan.jpg",
+            deck_dir / "deck16_plan.jpeg"
+        ]
+        
+        found_deck16 = None
+        for p in possible_deck16:
+            if p.exists():
+                found_deck16 = p
+                break
+        
+        if found_deck16:
+            st.write("👉 **Tap directly on the Water Slides or FlowRider below:**")
+            loaded_img = Image.open(found_deck16)
+            value = streamlit_image_coordinates(loaded_img, key="deck16_interactive")
+            
+            if value is not None:
+                click_x = value["x"]
+                click_y = value["y"]
+                
+                clicked_venue = None
+                for venue_name, zone in hotspots_deck16.items():
+                    if zone["x_min"] <= click_x <= zone["x_max"] and zone["y_min"] <= click_y <= zone["y_max"]:
+                        clicked_venue = venue_name
+                        break
+                
+                if clicked_venue:
+                    venue_data = hotspots_deck16[clicked_venue]
+                    st.markdown(f"""
+                    <div class='rc-card' style='border-left: 6px solid #FF2A6D;'>
+                        <h3 style='color: #002366; margin-top:0px;'>📍 {clicked_venue}</h3>
+                        <p style='color: #4A5568; margin-bottom:0px;'>{venue_data['desc']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    venue_img_path = deck_dir / venue_data['img']
+                    if venue_img_path.exists():
+                        st.image(str(venue_img_path), use_container_width=True)
+                    else:
+                        st.info(f"📷 Photo ready slot: Name your photo '{venue_data['img']}' inside your 'images/decks/' folder!")
+        else:
+            st.warning("📋 Place 'deck16_plan.png' inside 'images/decks/' to enable Deck 16 interactive tapping.")
+
+    else:
+        st.markdown(f"<div class='rc-card'>Slide the deck control to <strong>Deck 5</strong> or <strong>Deck 16</strong> to inspect interactive venues!</div>", unsafe_allow_html=True)
