@@ -180,27 +180,27 @@ else:
     if selected_deck == 5:
         st.markdown("<h3 style='color: #00E5FF;'>Deck 5 — Royal Promenade & The Pearl</h3>", unsafe_allow_html=True)
         
-        # Define hotspot bounding boxes (Adjust x_min, x_max, y_min, y_max based on tap coordinate outputs below!)
+        # Define hotspot bounding boxes based on resized image dimensions
         hotspots_deck5 = {
-    "🍕 Sorrento's Pizza": {
-        "x_min": 442, "x_max": 642, # 100 pixels to the left and right of 542
-        "y_min": 2594, "y_max": 2794, # 100 pixels above and below of 2694
-        "desc": "Late night pizza slices on the Royal Promenade!",
-        "img": "sorrentos.jpg"
-    },
-    "🔮 The Pearl": {
-        "x_min": 100, "x_max": 250, 
-        "y_min": 450, "y_max": 580,
-        "desc": "The iconic structural masterpiece in the center of Deck 5.",
-        "img": "the_pearl.jpg"
-    },
-    "🎤 Spotlight Karaoke": {
-        "x_min": 100, "x_max": 250, 
-        "y_min": 200, "y_max": 290,
-        "desc": "Bustling center of music and entertainment on Deck 5.",
-        "img": "karaoke.jpg"
-    }
-}
+            "🍕 Sorrento's Pizza": {
+                "x_min": 100, "x_max": 280, 
+                "y_min": 300, "y_max": 500,
+                "desc": "Late night pizza slices on the Royal Promenade!",
+                "img": "sorrentos.jpg"
+            },
+            "🔮 The Pearl": {
+                "x_min": 100, "x_max": 280, 
+                "y_min": 520, "y_max": 700,
+                "desc": "The iconic structural masterpiece in the center of Deck 5.",
+                "img": "the_pearl.jpg"
+            },
+            "🎤 Spotlight Karaoke": {
+                "x_min": 100, "x_max": 280, 
+                "y_min": 200, "y_max": 290,
+                "desc": "Bustling center of music and entertainment on Deck 5.",
+                "img": "karaoke.jpg"
+            }
+        }
         
         # Locate Deck 5 image
         possible_deck5 = [
@@ -219,15 +219,25 @@ else:
         if found_deck5:
             st.write("👉 **Tap anywhere on Deck 5 below:**")
             
-            # Load with PIL so PNG/JPG formats match cleanly
+            # Load with PIL
             loaded_img = Image.open(found_deck5)
-            value = streamlit_image_coordinates(loaded_img, key="deck5_interactive")
+            
+            # Automatically scale image down so it fits mobile screens perfectly (Max width 360px)
+            max_width = 360
+            if loaded_img.width > max_width:
+                ratio = max_width / float(loaded_img.width)
+                new_height = int(float(loaded_img.height) * ratio)
+                display_img = loaded_img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+            else:
+                display_img = loaded_img
+
+            value = streamlit_image_coordinates(display_img, key="deck5_interactive")
             
             if value is not None:
                 click_x = value["x"]
                 click_y = value["y"]
                 
-                # Prints your exact tap coordinates directly on screen!
+                # Prints your scaled tap coordinates directly on screen!
                 st.caption(f"📍 **You tapped at -> X: {click_x} | Y: {click_y}**")
                 
                 clicked_venue = None
@@ -251,7 +261,7 @@ else:
                     else:
                         st.info(f"📷 Photo ready slot: Upload '{venue_data['img']}' into your `images/decks/` folder on GitHub!")
                 else:
-                    st.write("💡 *Tip: Use the X/Y numbers above to adjust venue box areas in your code!*")
+                    st.write("💡 *Tip: Use the X/Y numbers above to fine-tune venue box areas in your code!*")
         else:
             st.warning(f"📋 Looking for image in `{deck_dir}`. Please verify that your uploaded file is named `deck5_plan.png` inside `images/decks/` on GitHub!")
 
@@ -261,12 +271,12 @@ else:
         
         hotspots_deck16 = {
             "🎢 Water Slides": {
-                "x_min": 55, "x_max": 85, "y_min": 65, "y_max": 80, 
+                "x_min": 100, "x_max": 280, "y_min": 200, "y_max": 400, 
                 "desc": "Captured right by the exit paths of the waterslides on Deck 16!", 
                 "img": "waterslides.jpg"
             },
             "🏄‍♂️ FlowRider Surfing": {
-                "x_min": 40, "x_max": 65, "y_min": 82, "y_max": 95, 
+                "x_min": 100, "x_max": 280, "y_min": 420, "y_max": 600, 
                 "desc": "Surfing simulator at the aft of Deck 16.", 
                 "img": "flowrider.jpg"
             }
@@ -287,7 +297,17 @@ else:
         if found_deck16:
             st.write("👉 **Tap directly on the Water Slides or FlowRider below:**")
             loaded_img = Image.open(found_deck16)
-            value = streamlit_image_coordinates(loaded_img, key="deck16_interactive")
+            
+            # Mobile auto-resizing
+            max_width = 360
+            if loaded_img.width > max_width:
+                ratio = max_width / float(loaded_img.width)
+                new_height = int(float(loaded_img.height) * ratio)
+                display_img = loaded_img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+            else:
+                display_img = loaded_img
+
+            value = streamlit_image_coordinates(display_img, key="deck16_interactive")
             
             if value is not None:
                 click_x = value["x"]
