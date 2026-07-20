@@ -64,6 +64,11 @@ if view_choice == "🚢 Deck Floor Plans":
 else:
     st.session_state["current_view"] = "Course Map"
 
+# Absolute base paths for Streamlit Cloud file detection
+base_dir = pathlib.Path(__file__).parent
+deck_dir = base_dir / "images" / "decks"
+
+
 # ================= VIEW 1: VIBRANT MAP WITH REALISTIC MARITIME PATH =================
 if st.session_state["current_view"] == "Course Map":
     
@@ -170,34 +175,34 @@ else:
     st.markdown("<div class='rc-card'><strong>Deck Inspector:</strong> Choose a deck and tap directly on an attraction or venue to view your personal photos!</div>", unsafe_allow_html=True)
     
     selected_deck = st.select_slider("Select Deck Floor Plan:", options=[5, 8, 16], value=5)
-    
-    # Absolute base paths for Streamlit Cloud
-    base_dir = pathlib.Path(__file__).parent
-    deck_dir = base_dir / "images" / "decks"
 
     # ------------------- DECK 5 -------------------
     if selected_deck == 5:
         st.markdown("<h3 style='color: #00E5FF;'>Deck 5 — Royal Promenade & The Pearl</h3>", unsafe_allow_html=True)
         
+        # Define hotspot bounding boxes (Adjust x_min, x_max, y_min, y_max based on tap coordinate outputs below!)
         hotspots_deck5 = {
             "🍕 Sorrento's Pizza": {
-                "x_min": 25, "x_max": 45, "y_min": 30, "y_max": 40,
+                "x_min": 100, "x_max": 250, 
+                "y_min": 300, "y_max": 420,
                 "desc": "Late night pizza slices on the Royal Promenade!",
                 "img": "sorrentos.jpg"
             },
             "🔮 The Pearl": {
-                "x_min": 30, "x_max": 50, "y_min": 45, "y_max": 55,
+                "x_min": 100, "x_max": 250, 
+                "y_min": 450, "y_max": 580,
                 "desc": "The iconic structural masterpiece in the center of Deck 5.",
                 "img": "the_pearl.jpg"
             },
-            "🎤 Spotlight Karaoke / Promenade": {
-                "x_min": 55, "x_max": 75, "y_min": 32, "y_max": 42,
-                "desc": "Bustling center of music and shopping on Deck 5.",
-                "img": "promenade.jpg"
+            "🎤 Spotlight Karaoke": {
+                "x_min": 100, "x_max": 250, 
+                "y_min": 200, "y_max": 290,
+                "desc": "Bustling center of music and entertainment on Deck 5.",
+                "img": "karaoke.jpg"
             }
         }
         
-        # Check all potential file names/extensions
+        # Locate Deck 5 image
         possible_deck5 = [
             deck_dir / "deck5_plan.png",
             deck_dir / "deck5_plan.jpg",
@@ -212,15 +217,18 @@ else:
                 break
 
         if found_deck5:
-            st.write("👉 **Tap directly on Sorrento's or The Pearl below:**")
+            st.write("👉 **Tap anywhere on Deck 5 below:**")
             
-            # Load with PIL to fix format extension mismatch
+            # Load with PIL so PNG/JPG formats match cleanly
             loaded_img = Image.open(found_deck5)
             value = streamlit_image_coordinates(loaded_img, key="deck5_interactive")
             
             if value is not None:
                 click_x = value["x"]
                 click_y = value["y"]
+                
+                # Prints your exact tap coordinates directly on screen!
+                st.caption(f"📍 **You tapped at -> X: {click_x} | Y: {click_y}**")
                 
                 clicked_venue = None
                 for venue_name, zone in hotspots_deck5.items():
@@ -241,11 +249,11 @@ else:
                     if venue_img_path.exists():
                         st.image(str(venue_img_path), use_container_width=True)
                     else:
-                        st.info(f"📷 Photo ready slot: Name your photo '{venue_data['img']}' inside your 'images/decks/' folder!")
+                        st.info(f"📷 Photo ready slot: Upload '{venue_data['img']}' into your `images/decks/` folder on GitHub!")
                 else:
-                    st.write("💡 *Tap near Sorrento's or The Pearl in the center of the deck map!*")
+                    st.write("💡 *Tip: Use the X/Y numbers above to adjust venue box areas in your code!*")
         else:
-            st.warning(f"📋 Looking for image in `{deck_dir}`. Please verify that your uploaded file is inside `images/decks/` on GitHub!")
+            st.warning(f"📋 Looking for image in `{deck_dir}`. Please verify that your uploaded file is named `deck5_plan.png` inside `images/decks/` on GitHub!")
 
     # ------------------- DECK 16 -------------------
     elif selected_deck == 16:
@@ -284,6 +292,8 @@ else:
             if value is not None:
                 click_x = value["x"]
                 click_y = value["y"]
+                
+                st.caption(f"📍 **You tapped at -> X: {click_x} | Y: {click_y}**")
                 
                 clicked_venue = None
                 for venue_name, zone in hotspots_deck16.items():
