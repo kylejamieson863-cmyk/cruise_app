@@ -182,25 +182,25 @@ else:
         
         # Define hotspot bounding boxes (Adjust x_min, x_max, y_min, y_max based on tap coordinate outputs below!)
         hotspots_deck5 = {
-            "🍕 Sorrento's Pizza": {
-                "x_min": 100, "x_max": 250, 
-                "y_min": 300, "y_max": 420,
-                "desc": "Late night pizza slices on the Royal Promenade!",
-                "img": "sorrentos.jpg"
-            },
-            "🔮 The Pearl": {
-                "x_min": 100, "x_max": 250, 
-                "y_min": 450, "y_max": 580,
-                "desc": "The iconic structural masterpiece in the center of Deck 5.",
-                "img": "the_pearl.jpg"
-            },
-            "🎤 Spotlight Karaoke": {
-                "x_min": 100, "x_max": 250, 
-                "y_min": 200, "y_max": 290,
-                "desc": "Bustling center of music and entertainment on Deck 5.",
-                "img": "karaoke.jpg"
-            }
-        }
+    "🍕 Sorrento's Pizza": {
+        "x_min": 442, "x_max": 642, # 100 pixels to the left and right of 542
+        "y_min": 2594, "y_max": 2794, # 100 pixels above and below of 2694
+        "desc": "Late night pizza slices on the Royal Promenade!",
+        "img": "sorrentos.jpg"
+    },
+    "🔮 The Pearl": {
+        "x_min": 100, "x_max": 250, 
+        "y_min": 450, "y_max": 580,
+        "desc": "The iconic structural masterpiece in the center of Deck 5.",
+        "img": "the_pearl.jpg"
+    },
+    "🎤 Spotlight Karaoke": {
+        "x_min": 100, "x_max": 250, 
+        "y_min": 200, "y_max": 290,
+        "desc": "Bustling center of music and entertainment on Deck 5.",
+        "img": "karaoke.jpg"
+    }
+}
         
         # Locate Deck 5 image
         possible_deck5 = [
