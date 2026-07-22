@@ -42,6 +42,7 @@ if selected_deck == 5:
             {"id": "pearl_1", "x": 50, "y": 52, "photo": "pearl.jpg"},
             {"id": "duck", "x": 40, "y": 62, "photo": "the_duck.jpg"},
             {"id": "dog", "x": 51, "y": 60, "photo": "dog.jpg"},
+            {"id": "wonka", "x": 51, "y": 22, "photo": "wonka.jpg"},
         ]
             
 
