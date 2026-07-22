@@ -67,7 +67,6 @@ if selected_deck == 5:
             </div>
             """
 
-        # HTML Container with auto-calculated height to show 100% of the deck plan
         full_html = f"""
         <script>
             function openModal(id) {{ document.getElementById(id).style.display = 'flex'; }}
@@ -80,7 +79,7 @@ if selected_deck == 5:
         {popups_html}
         """
 
-        # Increased height to 1400px so full tall deck map displays without getting cut off
-        st.components.v1.html(full_html, height=1400, scrolling=False)
+        # Increased height to 2200 and enabled scrolling so the entire deck displays fully
+        st.components.v1.html(full_html, height=2200, scrolling=True)
     else:
         st.warning("Please upload `deck5_plan.png` inside `images/decks/` on GitHub.")
