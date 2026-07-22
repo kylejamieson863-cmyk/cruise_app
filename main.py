@@ -37,7 +37,7 @@ if selected_deck == 5:
         # Camera Icon Positions (% from left, % from top)
         # Update these 'x' and 'y' numbers using the coordinate display box!
         camera_hotspots = [
-            {"id": "sorrentos", "x": 48, "y": 28, "photo": "sorrentos.jpg"},
+            {"id": "sorrentos", "x": 31, "y": 41, "photo": "sorrentos.jpg"},
             {"id": "pearl", "x": 48, "y": 52, "photo": "the_pearl.jpg"},
             {"id": "karaoke", "x": 48, "y": 76, "photo": "karaoke.jpg"},
         ]
