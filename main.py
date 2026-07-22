@@ -7,7 +7,7 @@ from PIL import Image
 
 st.set_page_config(page_title="Legend of the Seas", layout="wide")
 
-# Dark Theme
+# Dark Royal Caribbean Aesthetic
 st.markdown("""
     <style>
     .stApp { background-color: #030C1B; color: #FFFFFF; }
@@ -15,6 +15,7 @@ st.markdown("""
         background: linear-gradient(90deg, #001E4E 0%, #0066CC 100%);
         color: white; padding: 14px 20px; text-align: center;
         font-weight: 800; border-radius: 0 0 16px 16px; margin-top: -60px; margin-bottom: 20px;
+        letter-spacing: 2px;
     }
     .rc-card {
         background: rgba(255, 255, 255, 0.08);
@@ -54,9 +55,9 @@ if selected_deck == 5:
             {"y": img_h * 0.25, "x": img_w * 0.50, "photo": "karaoke.jpg"},
         ]
 
-        # Initialize Folium Canvas mapped to exact image dimensions
+        # FIXED LINE: crs="Simple" string format
         m = folium.Map(
-            crs=folium.CRS.Simple,
+            crs="Simple",
             bounds=[[0, 0], [img_h, img_w]],
             max_bounds=True,
             zoom_start=-1,
@@ -64,7 +65,7 @@ if selected_deck == 5:
             zoomControl=False
         )
 
-        # Add Deck Plan overlay
+        # Add Deck Plan image overlay
         folium.RasterLayers.ImageOverlay(
             image=str(deck_plan_path),
             bounds=[[0, 0], [img_h, img_w]]
@@ -89,13 +90,12 @@ if selected_deck == 5:
         </div>
         """
 
-        # Add pins to map with clean photo-only popup
+        # Add camera pins with clean photo-only popup
         for spot in camera_hotspots:
             photo_b64 = get_b64(deck_dir / spot["photo"])
             if not photo_b64:
                 continue
 
-            # Pure photo HTML popup (allows mobile pinch-zoom & no text)
             popup_html = f"""
             <div style="text-align:center; margin:-10px;">
                 <img src="data:image/jpeg;base64,{photo_b64}" 
@@ -114,7 +114,6 @@ if selected_deck == 5:
 
         m.fit_bounds([[0, 0], [img_h, img_w]])
 
-        # Render interactive map with pinch/zoom on mobile
         st_folium(m, width=400, height=700, returned_objects=[])
     else:
         st.warning("Please upload `deck5_plan.png` inside `images/decks/` on GitHub.")
