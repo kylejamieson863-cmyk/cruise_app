@@ -55,7 +55,6 @@ if selected_deck == 5:
             {"y": img_h * 0.25, "x": img_w * 0.50, "photo": "karaoke.jpg"},
         ]
 
-        # FIXED LINE: crs="Simple" string format
         m = folium.Map(
             crs="Simple",
             bounds=[[0, 0], [img_h, img_w]],
@@ -65,8 +64,8 @@ if selected_deck == 5:
             zoomControl=False
         )
 
-        # Add Deck Plan image overlay
-        folium.RasterLayers.ImageOverlay(
+        # FIXED LINE: Using lowercase 'raster_layers'
+        folium.raster_layers.ImageOverlay(
             image=str(deck_plan_path),
             bounds=[[0, 0], [img_h, img_w]]
         ).add_to(m)
@@ -90,7 +89,7 @@ if selected_deck == 5:
         </div>
         """
 
-        # Add camera pins with clean photo-only popup
+        # Add camera pins with photo-only popup
         for spot in camera_hotspots:
             photo_b64 = get_b64(deck_dir / spot["photo"])
             if not photo_b64:
