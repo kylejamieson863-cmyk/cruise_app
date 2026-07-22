@@ -40,6 +40,7 @@ if selected_deck == 5:
             {"id": "sorrentos", "x": 31, "y": 41, "photo": "sorrentos.jpg"},
             {"id": "pearl", "x": 30, "y": 51, "photo": "the_pearl.jpg"},
             {"id": "pearl", "x": 50, "y": 51, "photo": "the_pearl_1.jpg"},
+            {"id": "duck", "x": 40, "y": 62, "photo": "the_duck.jpg"},
         ]
 
         pins_html = ""
