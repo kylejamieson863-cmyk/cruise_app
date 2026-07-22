@@ -41,7 +41,7 @@ if selected_deck == 5:
             {"id": "pearl", "x": 30, "y": 51, "photo": "the_pearl.jpg"},
             {"id": "pearl", "x": 50, "y": 51, "photo": "the_pearl_1.jpg"},
             {"id": "duck", "x": 40, "y": 62, "photo": "the_duck.jpg"},
-        ]
+             {"id": "dog", "x": 51, "y": 6, "photo": "dog.jpg"},
 
         pins_html = ""
         popups_html = ""
