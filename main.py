@@ -2,16 +2,37 @@ import streamlit as st
 import pathlib
 import base64
 
+# 1. Page Setup & Styling
 st.set_page_config(page_title="Legend of the Seas", layout="wide")
 
-# Royal Caribbean Dark Theme
 st.markdown("""
     <style>
-    .stApp { background-color: #030C1B; color: #FFFFFF; }
+    .stApp {
+        background-color: #0A192F;
+        color: #FFFFFF;
+        font-family: 'Inter', sans-serif;
+    }
     .brand-header {
-        background: linear-gradient(90deg, #001E4E 0%, #0066CC 100%);
-        color: white; padding: 14px 20px; text-align: center;
-        font-weight: 800; border-radius: 0 0 16px 16px; margin-top: -60px; margin-bottom: 20px;
+        background: linear-gradient(90deg, #002366 0%, #0073E6 100%);
+        color: white;
+        padding: 14px 20px;
+        text-align: center;
+        font-weight: 800;
+        border-radius: 0px 0px 16px 16px;
+        margin-top: -60px;
+        margin-bottom: 20px;
+        letter-spacing: 1.5px;
+        font-size: 16px;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+    }
+    .rc-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #FFFFFF;
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -34,10 +55,6 @@ if selected_deck == 5:
     deck_b64 = get_image_b64(deck_plan_path)
 
     if deck_b64:
-        # -------------------------------------------------------------
-        # CAMERA / VIDEO HOTSPOTS
-        # You can now put either .jpg / .png photos OR .mp4 video files!
-        # -------------------------------------------------------------
         camera_hotspots = [
             {"id": "sorrentos", "x": 31, "y": 41, "file": "sorrentos.jpg"},
             {"id": "pearl", "x": 30, "y": 51, "file": "the_pearl.jpg"},
@@ -45,8 +62,6 @@ if selected_deck == 5:
             {"id": "duck", "x": 40, "y": 62, "file": "the_duck.jpg"},
             {"id": "dog", "x": 51, "y": 60, "file": "dog.jpg"},
             {"id": "wonka", "x": 51, "y": 22, "file": "wonka.mp4"},
-            # Example video entry:
-            # {"id": "promo_vid", "x": 50, "y": 30, "file": "deck_walkthrough.mp4"},
         ]
 
         pins_html = ""
@@ -60,12 +75,9 @@ if selected_deck == 5:
             if not file_b64:
                 continue
 
-            # Check if file is a video or image
             is_video = filename.lower().endswith(".mp4")
-
-            # Overlay Camera Pin (shows 📹 icon if it's a video)
             pin_icon = "📹" if is_video else "📷"
-            
+
             pins_html += f"""
             <div onclick="openModal('{spot['id']}'); event.stopPropagation();" 
                  style="position: absolute; left: {spot['x']}%; top: {spot['y']}%; transform: translate(-50%, -50%); cursor: pointer; z-index: 100;">
@@ -75,7 +87,6 @@ if selected_deck == 5:
             </div>
             """
 
-            # Build HTML depending on file type
             if is_video:
                 media_html = f"""
                 <video controls autoplay loop muted playsinline style="max-width: 95vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 0 25px rgba(0,229,255,0.3);">
@@ -88,7 +99,6 @@ if selected_deck == 5:
                 <img src="data:image/jpeg;base64,{file_b64}" style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px;" />
                 """
 
-            # Lightbox Modal Popup
             popups_html += f"""
             <div id="{spot['id']}" class="photo-modal" onclick="closeModal('{spot['id']}')" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 999999; justify-content: center; align-items: center;">
                 <span onclick="closeModal('{spot['id']}')" style="position: absolute; top: 20px; right: 25px; color: #FFFFFF; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1000000;">&times;</span>
@@ -115,7 +125,6 @@ if selected_deck == 5:
                 }}
             }}
             
-            // Helper function to show exact clicked coordinates
             function showCoords(e) {{
                 let rect = e.target.getBoundingClientRect();
                 let x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
@@ -124,7 +133,6 @@ if selected_deck == 5:
             }}
         </script>
         
-        <!-- Live Coordinate Display Box -->
         <div id="coord-box" style="background: #002366; color: #00E5FF; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-family: sans-serif; font-size: 16px; margin-bottom: 12px; border: 1px solid #00E5FF;">
             📍 Tap anywhere on the deck plan to reveal its exact X and Y coordinates!
         </div>
@@ -136,105 +144,6 @@ if selected_deck == 5:
         {popups_html}
         """
 
-        st.components.v1.html(full_html, height=2200, scrolling=True)
-    else:
-        st.warning("Please upload `deck5_plan.png` inside `images/decks/` on GitHub.")
-
-            # Overlay Camera Pin
-            pins_html += f"""
-            <div onclick="openModal('{spot['id']}'); event.stopPropagation();" 
-                 style="position: absolute; left: {spot['x']}%; top: {spot['y']}%; transform: translate(-50%, -50%); cursor: pointer; z-index: 100;">
-                <div style="background: #00E5FF; color: #000; border: 2px solid #FFFFFF; box-shadow: 0 0 12px rgba(0,229,255,0.9); font-size: 16px; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%;">
-                    📷
-                </div>
-            </div>
-            """
-
-            # Light Modal Popup
-            popups_html += f"""
-            <div id="{spot['id']}" class="photo-modal" onclick="closeModal('{spot['id']}')" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 999999; justify-content: center; align-items: center;">
-                <span onclick="closeModal('{spot['id']}')" style="position: absolute; top: 20px; right: 25px; color: #FFFFFF; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1000000;">&times;</span>
-                <img src="data:image/jpeg;base64,{photo_b64}" style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px;" />
-            </div>
-            """
-
-        full_html = f"""
-        <script>
-            function openModal(id) {{ document.getElementById(id).style.display = 'flex'; }}
-            function closeModal(id) {{ document.getElementById(id).style.display = 'none'; }}
-            
-            // Helper function to show exact clicked coordinates
-            function showCoords(e) {{
-                let rect = e.target.getBoundingClientRect();
-                let x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-                let y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
-                document.getElementById('coord-box').innerText = '📍 Clicked Location -> "x": ' + x + ', "y": ' + y;
-            }}
-        </script>
-        
-        <!-- Live Coordinate Display Box -->
-        <div id="coord-box" style="background: #002366; color: #00E5FF; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-family: sans-serif; font-size: 16px; margin-bottom: 12px; border: 1px solid #00E5FF;">
-            📍 Tap anywhere on the deck plan to reveal its exact X and Y coordinates!
-        </div>
-
-        <div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto;">
-            <img src="data:image/png;base64,{deck_b64}" onclick="showCoords(event)" style="width: 100%; height: auto; border-radius: 12px; display: block; cursor: crosshair;" />
-            {pins_html}
-        </div>
-        {popups_html}
-        """
-
-        st.components.v1.html(full_html, height=2200, scrolling=True)
-    else:
-        st.warning("Please upload `deck5_plan.png` inside `images/decks/` on GitHub.")
-
-    if deck_b64:
-        # Camera Icon Positions (% from left, % from top)
-        camera_hotspots = [
-            {"id": "sorrentos", "x": 48, "y": 28, "photo": "sorrentos.jpg"},
-            {"id": "pearl", "x": 48, "y": 52, "photo": "the_pearl.jpg"},
-            {"id": "karaoke", "x": 48, "y": 76, "photo": "karaoke.jpg"},
-        ]
-
-        pins_html = ""
-        popups_html = ""
-
-        for spot in camera_hotspots:
-            photo_b64 = get_image_b64(deck_dir / spot["photo"])
-            if not photo_b64:
-                continue
-
-            # Overlay Camera Pin
-            pins_html += f"""
-            <div onclick="openModal('{spot['id']}')" 
-                 style="position: absolute; left: {spot['x']}%; top: {spot['y']}%; transform: translate(-50%, -50%); cursor: pointer; z-index: 100;">
-                <div style="background: #00E5FF; color: #000; border: 2px solid #FFFFFF; box-shadow: 0 0 12px rgba(0,229,255,0.9); font-size: 16px; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%;">
-                    📷
-                </div>
-            </div>
-            """
-
-            # Light Modal Popup (Only Photo + Top-Right 'X' Close Button)
-            popups_html += f"""
-            <div id="{spot['id']}" class="photo-modal" onclick="closeModal('{spot['id']}')" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 999999; justify-content: center; align-items: center;">
-                <span onclick="closeModal('{spot['id']}')" style="position: absolute; top: 20px; right: 25px; color: #FFFFFF; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1000000;">&times;</span>
-                <img src="data:image/jpeg;base64,{photo_b64}" style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px;" />
-            </div>
-            """
-
-        full_html = f"""
-        <script>
-            function openModal(id) {{ document.getElementById(id).style.display = 'flex'; }}
-            function closeModal(id) {{ document.getElementById(id).style.display = 'none'; }}
-        </script>
-        <div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto;">
-            <img src="data:image/png;base64,{deck_b64}" style="width: 100%; height: auto; border-radius: 12px; display: block;" />
-            {pins_html}
-        </div>
-        {popups_html}
-        """
-
-        # Increased height to 2200 and enabled scrolling so the entire deck displays fully
         st.components.v1.html(full_html, height=2200, scrolling=True)
     else:
         st.warning("Please upload `deck5_plan.png` inside `images/decks/` on GitHub.")
