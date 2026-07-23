@@ -141,29 +141,44 @@ def render_deck_page(deck_filename, camera_hotspots):
 
 
 # -----------------------------------------------------------------
-# DECK SELECTOR & HOTSPOT CONFIGURATION
+# DECK DATA CONFIGURATION (DECKS 2 TO 20)
 # -----------------------------------------------------------------
-selected_deck = st.select_slider("Select Deck Level:", options=[5, 8, 16], value=5)
-
-if selected_deck == 5:
-    deck5_hotspots = [
+# Simply add your photos/videos into the list for whichever deck they belong to!
+deck_data = {
+    2: [],
+    3: [],
+    4: [],
+    5: [
         {"id": "sorrentos", "x": 31, "y": 41, "file": "sorrentos.jpg"},
         {"id": "pearl", "x": 30, "y": 51, "file": "the_pearl.jpg"},
         {"id": "pearl_1", "x": 50, "y": 52, "file": "pearl.jpg"},
         {"id": "duck", "x": 40, "y": 62, "file": "the_duck.jpg"},
         {"id": "dog", "x": 51, "y": 60, "file": "dog.jpg"},
         {"id": "wonka", "x": 51, "y": 22, "file": "wonka.mp4"},
-    ]
-    render_deck_page("deck5_plan.png", deck5_hotspots)
+    ],
+    6: [],
+    7: [],
+    8: [],
+    9: [],
+    10: [],
+    11: [],
+    12: [],
+    13: [],
+    14: [],
+    15: [],
+    16: [],
+    17: [],
+    18: [],
+    19: [],
+    20: []
+}
 
-elif selected_deck == 8:
-    deck8_hotspots = [
-        # Add your Deck 8 locations here!
-    ]
-    render_deck_page("deck8_plan.png", deck8_hotspots)
+# Slider from Deck 2 to Deck 20
+selected_deck = st.select_slider("Select Deck Level:", options=list(range(2, 21)), value=5)
 
-elif selected_deck == 16:
-    deck16_hotspots = [
-        # Add your Deck 16 locations here!
-    ]
-    render_deck_page("deck16_plan.png", deck16_hotspots)
+# Automatic Plan Image Naming: deck2_plan.png, deck3_plan.png, etc.
+image_filename = f"deck{selected_deck}_plan.png"
+hotspots = deck_data.get(selected_deck, [])
+
+# Render the selected deck page
+render_deck_page(image_filename, hotspots)
