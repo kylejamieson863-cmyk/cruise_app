@@ -64,6 +64,16 @@ if selected_deck == 5:
             {"id": "wonka", "x": 51, "y": 22, "file": "wonka.mp4"},
         ]
 
+        
+if selected_deck == 16:
+    deck_plan_path = deck_dir / "deck16_plan.png"
+    deck_b64 = get_image_b64(deck_plan_path)
+
+    if deck_b64:
+        camera_hotspots = [
+            
+        ]
+
         pins_html = ""
         popups_html = ""
 
