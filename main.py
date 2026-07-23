@@ -65,7 +65,7 @@ if selected_deck == 5:
         ]
 
         
-if selected_deck == 16:
+elif selected_deck == 16:
     deck_plan_path = deck_dir / "deck16_plan.png"
     deck_b64 = get_image_b64(deck_plan_path)
 
