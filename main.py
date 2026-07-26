@@ -170,6 +170,7 @@ deck_data = {
          {"id": "edge", "x": 19, "y": 62, "file": "edge_16.png"},
          {"id": "flow", "x": 68, "y": 93, "file": "flow_16.png"},
          {"id": "golf", "x": 42, "y": 90, "file": "golf_16.png"},
+         {"id": "slide", "x": 83, "y": 75, "file": "slide_16.png"},
     ],
     17: [],
     18: [],
