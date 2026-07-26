@@ -37,29 +37,25 @@ st.markdown(
     }
     .pano-wrapper {
         width: 90vw;
-        height: 75vh;
-        max-width: 1100px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        cursor: grab;
-        user-select: none;
+        max-width: 1000px;
+        max-height: 70vh;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
         border-radius: 12px;
         box-shadow: 0 0 25px rgba(0,229,255,0.4);
         background: #000;
-        display: flex;
-        align-items: center;
-        scrollbar-width: thin;
-        scrollbar-color: #00E5FF #002366;
-    }
-    .pano-wrapper:active {
-        cursor: grabbing;
+        display: block;
+        margin: auto;
     }
     .pano-img {
-        height: 100%;
+        max-height: 70vh;
+        height: auto;
         width: auto;
-        max-width: none;
-        pointer-events: none;
-        display: block;
+        max-width: none !important;
+        display: inline-block;
+        vertical-align: middle;
     }
     </style>
 """,
@@ -188,7 +184,7 @@ def render_deck_page(deck_filename, camera_hotspots):
             """
         elif is_pano:
             media_html = f"""
-            <div id="pano_wrap_{spot['id']}" class="pano-wrapper" onmousedown="startDrag(event, '{spot['id']}')" onmouseleave="stopDrag('{spot['id']}')" onmouseup="stopDrag('{spot['id']}')" onmousemove="doDrag(event, '{spot['id']}')" ontouchstart="startTouch(event, '{spot['id']}')" ontouchmove="doTouch(event, '{spot['id']}')" ontouchend="stopDrag('{spot['id']}')">
+            <div id="pano_wrap_{spot['id']}" class="pano-wrapper">
                 <img src="data:image/jpeg;base64,{file_b64}" class="pano-img" />
             </div>
             """
@@ -208,9 +204,6 @@ def render_deck_page(deck_filename, camera_hotspots):
 
     full_html = f"""
     <script>
-        let isMouseDown = false;
-        let startX, scrollLeftVal;
-
         function openModal(id) {{
             let modal = document.getElementById(id);
             if (modal) {{
@@ -218,7 +211,6 @@ def render_deck_page(deck_filename, camera_hotspots):
                 let vid = modal.querySelector('video');
                 if (vid) {{ vid.play(); }}
 
-                // Center the panorama when opened
                 let pano = document.getElementById('pano_wrap_' + id);
                 if (pano) {{
                     pano.scrollLeft = (pano.scrollWidth - pano.clientWidth) / 2;
@@ -233,41 +225,6 @@ def render_deck_page(deck_filename, camera_hotspots):
                 let vid = modal.querySelector('video');
                 if (vid) {{ vid.pause(); }}
             }}
-        }}
-
-        // Smooth Dragging Controls
-        function startDrag(e, id) {{
-            isMouseDown = true;
-            let slider = document.getElementById('pano_wrap_' + id);
-            startX = e.pageX - slider.offsetLeft;
-            scrollLeftVal = slider.scrollLeft;
-        }}
-
-        function stopDrag(id) {{
-            isMouseDown = false;
-        }}
-
-        function doDrag(e, id) {{
-            if (!isMouseDown) return;
-            e.preventDefault();
-            let slider = document.getElementById('pano_wrap_' + id);
-            let x = e.pageX - slider.offsetLeft;
-            let walk = (x - startX) * 2;
-            slider.scrollLeft = scrollLeftVal - walk;
-        }}
-
-        // Touch support for mobile/tablets
-        function startTouch(e, id) {{
-            let slider = document.getElementById('pano_wrap_' + id);
-            startX = e.touches[0].pageX - slider.offsetLeft;
-            scrollLeftVal = slider.scrollLeft;
-        }}
-
-        function doTouch(e, id) {{
-            let slider = document.getElementById('pano_wrap_' + id);
-            let x = e.touches[0].pageX - slider.offsetLeft;
-            let walk = (x - startX) * 2;
-            slider.scrollLeft = scrollLeftVal - walk;
         }}
        
         function showCoords(e) {{
