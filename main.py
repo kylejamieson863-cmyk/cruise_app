@@ -267,7 +267,7 @@ deck_data = {
     ],
     7: [
         {"id": "slide_1", "x": 46, "y": 85, "file": "slide_1.jpg"},
-        {"id": "sweetshop", "x": 46, "y": 85, "file": "sweetshop_7.jpg"},
+        {"id": "sweetshop", "x": 29, "y": 80, "file": "sweetshop_7.jpg"},
     ],
     8: [],
     9: [],
