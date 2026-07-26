@@ -191,7 +191,9 @@ deck_data = {
     3: [
         {"id": "casino", "x": 45, "y": 60, "file": "casino_3.jpg"},
     ],
-    4: [],
+    4: [
+        {"id": "music", "x": 31, "y": 38, "file": "music_4.jpg"},
+    ],
     5: [
         {"id": "sorrentos", "x": 31, "y": 41, "file": "sorrentos.jpg"},
         {"id": "pearl", "x": 30, "y": 51, "file": "the_pearl.jpg"},
