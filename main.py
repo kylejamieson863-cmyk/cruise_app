@@ -48,7 +48,7 @@ st.markdown(
 # -----------------------------------------------------------------
 # SECURITY / PASSWORD PROTECTION
 # -----------------------------------------------------------------
-APP_PASSWORD = "Legend7827" # CHANGE THIS TO YOUR DESIRED PASSWORD
+APP_PASSWORD = "Legend7827"
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -57,7 +57,7 @@ if "authenticated" not in st.session_state:
 def check_password():
     if st.session_state.get("password_input") == APP_PASSWORD:
         st.session_state.authenticated = True
-        del st.session_state["password_input"] # Clear password from memory
+        del st.session_state["password_input"]
     else:
         st.session_state.authenticated = False
 
@@ -87,7 +87,7 @@ if not st.session_state.authenticated:
                 st.error("❌ Incorrect password. Please try again.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.stop() # Stops execution here until logged in
+    st.stop()
 
 # -----------------------------------------------------------------
 # LOGOUT BUTTON IN SIDEBAR
@@ -99,6 +99,9 @@ with st.sidebar:
 
 base_dir = pathlib.Path(__file__).parent
 deck_dir = base_dir / "images" / "decks"
+
+# Raw GitHub URL base path
+GITHUB_RAW_BASE = "https://raw.githubusercontent.com/kylejamieson863-cmyk/cruise_app/main/images/decks/"
 
 
 def get_image_b64(path):
@@ -125,10 +128,6 @@ def render_deck_page(deck_filename, camera_hotspots):
     for spot in camera_hotspots:
         filename = spot["file"]
         file_path = deck_dir / filename
-        file_b64 = get_image_b64(file_path)
-
-        if not file_b64:
-            continue
 
         is_video = filename.lower().endswith(".mp4")
         is_pano = filename.lower().endswith(
@@ -154,6 +153,7 @@ def render_deck_page(deck_filename, camera_hotspots):
 
         # Choose player based on file type
         if is_video:
+            file_b64 = get_image_b64(file_path)
             media_html = f"""
             <video controls autoplay loop muted playsinline style="max-width: 95vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 0 25px rgba(0,229,255,0.3);">
                 <source src="data:video/mp4;base64,{file_b64}" type="video/mp4">
@@ -161,13 +161,16 @@ def render_deck_page(deck_filename, camera_hotspots):
             </video>
             """
         elif is_pano:
+            # Uses direct raw URL instead of Base64 to fix Chrome/WebGL memory limits
+            pano_url = GITHUB_RAW_BASE + filename
             media_html = f"""
             <div id="pano_{spot['id']}" style="width: 90vw; height: 75vh; max-width: 1100px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 25px rgba(0,229,255,0.4);"></div>
             <script>
-                window.pano_data_{spot['id']} = "data:image/jpeg;base64,{file_b64}";
+                window.pano_url_{spot['id']} = "{pano_url}";
             </script>
             """
         else:
+            file_b64 = get_image_b64(file_path)
             media_html = f"""
             <img src="data:image/jpeg;base64,{file_b64}" style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px;" />
             """
@@ -197,10 +200,10 @@ def render_deck_page(deck_filename, camera_hotspots):
 
                 let panoContainer = document.getElementById('pano_' + id);
                 if (panoContainer && !viewers[id]) {{
-                    let imgData = window['pano_data_' + id];
+                    let imgUrl = window['pano_url_' + id];
                     viewers[id] = pannellum.viewer('pano_' + id, {{
                         "type": "cylindrical",
-                        "panorama": imgData,
+                        "panorama": imgUrl,
                         "autoLoad": true,
                         "compass": false,
                         "hfov": 100,
