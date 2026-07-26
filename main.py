@@ -197,6 +197,7 @@ deck_data = {
         {"id": "duck", "x": 40, "y": 62, "file": "the_duck.jpg"},
         {"id": "dog", "x": 51, "y": 60, "file": "dog.jpg"},
         {"id": "wonka", "x": 51, "y": 22, "file": "wonka.mp4"},
+        {"id": "phone", "x": 55, "y": 58, "file": "phone_5.png"},
     ],
     6: [],
     7: [],
