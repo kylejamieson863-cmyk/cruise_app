@@ -188,7 +188,9 @@ def render_deck_page(deck_filename, camera_hotspots):
 # Simply add your photos/videos into the list for whichever deck they belong to!
 deck_data = {
     2: [],
-    3: [],
+    3: [
+        {"id": "casino", "x": 45, "y": 60, "file": "casino_3.jpg"},
+    ],
     4: [],
     5: [
         {"id": "sorrentos", "x": 31, "y": 41, "file": "sorrentos.jpg"},
