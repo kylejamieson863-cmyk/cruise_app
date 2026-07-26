@@ -199,15 +199,14 @@ def render_deck_page(deck_filename, camera_hotspots):
                 if (panoContainer && !viewers[id]) {{
                     let imgData = window['pano_data_' + id];
                     viewers[id] = pannellum.viewer('pano_' + id, {{
-                        "type": "equirectangular",
+                        "type": "cylindrical",
                         "panorama": imgData,
                         "autoLoad": true,
                         "compass": false,
-                        "hfov": 120,
-                        "minHfov": 40,
-                        "maxHfov": 150,
-                        "haov": 180,
-                        "vaov": 90
+                        "hfov": 100,
+                        "minHfov": 30,
+                        "maxHfov": 120,
+                        "vaov": 60
                     }});
                 }}
             }}
@@ -272,7 +271,6 @@ deck_data = {
     ],
     7: [
         {"id": "slide_1", "x": 46, "y": 85, "file": "slide_1.jpg"},
-        {"id": "sweetshop", "x": 46, "y": 85, "file": "sweetshop_7.jpg"},
     ],
     8: [],
     9: [],
