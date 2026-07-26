@@ -193,6 +193,7 @@ deck_data = {
     ],
     4: [
         {"id": "music", "x": 31, "y": 38, "file": "music_4.jpg"},
+        {"id": "music_vid", "x": 31, "y": 37, "file": "music_vid.mp4"},
     ],
     5: [
         {"id": "sorrentos", "x": 31, "y": 41, "file": "sorrentos.jpg"},
