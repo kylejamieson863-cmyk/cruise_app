@@ -35,6 +35,32 @@ st.markdown(
         padding: 15px 20px;
         margin-bottom: 20px;
     }
+    .pano-wrapper {
+        width: 90vw;
+        height: 75vh;
+        max-width: 1100px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        cursor: grab;
+        user-select: none;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(0,229,255,0.4);
+        background: #000;
+        display: flex;
+        align-items: center;
+        scrollbar-width: thin;
+        scrollbar-color: #00E5FF #002366;
+    }
+    .pano-wrapper:active {
+        cursor: grabbing;
+    }
+    .pano-img {
+        height: 100%;
+        width: auto;
+        max-width: none;
+        pointer-events: none;
+        display: block;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -100,9 +126,6 @@ with st.sidebar:
 base_dir = pathlib.Path(__file__).parent
 deck_dir = base_dir / "images" / "decks"
 
-# Raw GitHub URL base path
-GITHUB_RAW_BASE = "https://raw.githubusercontent.com/kylejamieson863-cmyk/cruise_app/main/images/decks/"
-
 
 def get_image_b64(path):
     if path.exists():
@@ -128,6 +151,10 @@ def render_deck_page(deck_filename, camera_hotspots):
     for spot in camera_hotspots:
         filename = spot["file"]
         file_path = deck_dir / filename
+        file_b64 = get_image_b64(file_path)
+
+        if not file_b64:
+            continue
 
         is_video = filename.lower().endswith(".mp4")
         is_pano = filename.lower().endswith(
@@ -153,7 +180,6 @@ def render_deck_page(deck_filename, camera_hotspots):
 
         # Choose player based on file type
         if is_video:
-            file_b64 = get_image_b64(file_path)
             media_html = f"""
             <video controls autoplay loop muted playsinline style="max-width: 95vw; max-height: 85vh; border-radius: 8px; box-shadow: 0 0 25px rgba(0,229,255,0.3);">
                 <source src="data:video/mp4;base64,{file_b64}" type="video/mp4">
@@ -161,16 +187,12 @@ def render_deck_page(deck_filename, camera_hotspots):
             </video>
             """
         elif is_pano:
-            # Uses direct raw URL instead of Base64 to fix Chrome/WebGL memory limits
-            pano_url = GITHUB_RAW_BASE + filename
             media_html = f"""
-            <div id="pano_{spot['id']}" style="width: 90vw; height: 75vh; max-width: 1100px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 25px rgba(0,229,255,0.4);"></div>
-            <script>
-                window.pano_url_{spot['id']} = "{pano_url}";
-            </script>
+            <div id="pano_wrap_{spot['id']}" class="pano-wrapper" onmousedown="startDrag(event, '{spot['id']}')" onmouseleave="stopDrag('{spot['id']}')" onmouseup="stopDrag('{spot['id']}')" onmousemove="doDrag(event, '{spot['id']}')" ontouchstart="startTouch(event, '{spot['id']}')" ontouchmove="doTouch(event, '{spot['id']}')" ontouchend="stopDrag('{spot['id']}')">
+                <img src="data:image/jpeg;base64,{file_b64}" class="pano-img" />
+            </div>
             """
         else:
-            file_b64 = get_image_b64(file_path)
             media_html = f"""
             <img src="data:image/jpeg;base64,{file_b64}" style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 8px;" />
             """
@@ -185,11 +207,9 @@ def render_deck_page(deck_filename, camera_hotspots):
         """
 
     full_html = f"""
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
-
     <script>
-        var viewers = {{}};
+        let isMouseDown = false;
+        let startX, scrollLeftVal;
 
         function openModal(id) {{
             let modal = document.getElementById(id);
@@ -198,19 +218,10 @@ def render_deck_page(deck_filename, camera_hotspots):
                 let vid = modal.querySelector('video');
                 if (vid) {{ vid.play(); }}
 
-                let panoContainer = document.getElementById('pano_' + id);
-                if (panoContainer && !viewers[id]) {{
-                    let imgUrl = window['pano_url_' + id];
-                    viewers[id] = pannellum.viewer('pano_' + id, {{
-                        "type": "cylindrical",
-                        "panorama": imgUrl,
-                        "autoLoad": true,
-                        "compass": false,
-                        "hfov": 100,
-                        "minHfov": 30,
-                        "maxHfov": 120,
-                        "vaov": 60
-                    }});
+                // Center the panorama when opened
+                let pano = document.getElementById('pano_wrap_' + id);
+                if (pano) {{
+                    pano.scrollLeft = (pano.scrollWidth - pano.clientWidth) / 2;
                 }}
             }}
         }}
@@ -222,6 +233,41 @@ def render_deck_page(deck_filename, camera_hotspots):
                 let vid = modal.querySelector('video');
                 if (vid) {{ vid.pause(); }}
             }}
+        }}
+
+        // Smooth Dragging Controls
+        function startDrag(e, id) {{
+            isMouseDown = true;
+            let slider = document.getElementById('pano_wrap_' + id);
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeftVal = slider.scrollLeft;
+        }}
+
+        function stopDrag(id) {{
+            isMouseDown = false;
+        }}
+
+        function doDrag(e, id) {{
+            if (!isMouseDown) return;
+            e.preventDefault();
+            let slider = document.getElementById('pano_wrap_' + id);
+            let x = e.pageX - slider.offsetLeft;
+            let walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeftVal - walk;
+        }}
+
+        // Touch support for mobile/tablets
+        function startTouch(e, id) {{
+            let slider = document.getElementById('pano_wrap_' + id);
+            startX = e.touches[0].pageX - slider.offsetLeft;
+            scrollLeftVal = slider.scrollLeft;
+        }}
+
+        function doTouch(e, id) {{
+            let slider = document.getElementById('pano_wrap_' + id);
+            let x = e.touches[0].pageX - slider.offsetLeft;
+            let walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeftVal - walk;
         }}
        
         function showCoords(e) {{
