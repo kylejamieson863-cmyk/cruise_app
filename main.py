@@ -162,7 +162,7 @@ def render_deck_page(deck_filename, camera_hotspots):
             """
         elif is_pano:
             media_html = f"""
-            <div id="pano_{spot['id']}" style="width: 90vw; height: 80vh; max-width: 1000px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 25px rgba(0,229,255,0.4);"></div>
+            <div id="pano_{spot['id']}" style="width: 90vw; height: 75vh; max-width: 1100px; border-radius: 12px; overflow: hidden; box-shadow: 0 0 25px rgba(0,229,255,0.4);"></div>
             <script>
                 window.pano_data_{spot['id']} = "data:image/jpeg;base64,{file_b64}";
             </script>
@@ -202,7 +202,12 @@ def render_deck_page(deck_filename, camera_hotspots):
                         "type": "equirectangular",
                         "panorama": imgData,
                         "autoLoad": true,
-                        "compass": false
+                        "compass": false,
+                        "hfov": 120,
+                        "minHfov": 40,
+                        "maxHfov": 150,
+                        "haov": 180,
+                        "vaov": 90
                     }});
                 }}
             }}
@@ -267,7 +272,6 @@ deck_data = {
     ],
     7: [
         {"id": "slide_1", "x": 46, "y": 85, "file": "slide_1.jpg"},
-        {"id": "sweetshop", "x": 29, "y": 80, "file": "sweetshop_7.jpg"},
     ],
     8: [],
     9: [],
