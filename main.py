@@ -39,6 +39,48 @@ st.markdown("""
 
 st.markdown("<div class='brand-header'>⚓ LEGEND OF THE SEAS — DECK EXPLORER</div>", unsafe_allow_html=True)
 
+# -----------------------------------------------------------------
+# SECURITY / PASSWORD PROTECTION
+# -----------------------------------------------------------------
+APP_PASSWORD = "Legend7827" # CHANGE THIS TO YOUR DESIRED PASSWORD
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+def check_password():
+    if st.session_state.get("password_input") == APP_PASSWORD:
+        st.session_state.authenticated = True
+        del st.session_state["password_input"] # Clear password from memory
+    else:
+        st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("<div class='rc-card' style='text-align: center;'>", unsafe_allow_html=True)
+        st.subheader("🔒 Passcode Required")
+        st.write("Please enter the password to access the deck explorer.")
+        
+        st.text_input("Password", type="password", key="password_input", on_change=check_password)
+        
+        if st.button("Unlock Explorer", use_container_width=True):
+            check_password()
+            if st.session_state.authenticated:
+                st.rerun()
+            else:
+                st.error("❌ Incorrect password. Please try again.")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+    st.stop() # Stops execution here until logged in
+
+# -----------------------------------------------------------------
+# LOGOUT BUTTON IN SIDEBAR
+# -----------------------------------------------------------------
+with st.sidebar:
+    if st.button("🔒 Lock App"):
+        st.session_state.authenticated = False
+        st.rerun()
+        
 base_dir = pathlib.Path(__file__).parent
 deck_dir = base_dir / "images" / "decks"
 
